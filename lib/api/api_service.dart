@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:movies/api/api.dart';
 import 'package:movies/models/movie.dart';
+import 'package:movies/models/actor.dart';
 import 'package:http/http.dart' as http;
 import 'package:movies/models/review.dart';
+
+import 'api_end_points.dart';
 
 class ApiService {
   static Future<List<Movie>?> getTopRatedMovies() async {
@@ -77,5 +80,62 @@ class ApiService {
       return null;
     }
   }
+  static Future<List<Actor>?> getPopularActors() async {
+    List<Actor> actors = [];
+    try {
+      http.Response response = await http.get(Uri.parse(
+          '${Api.baseUrl}${ApiEndPoints.popularActors}?api_key=${Api.apiKey}&language=en-US&page=1'));
 
+      var res = jsonDecode(response.body);
+
+      // Recorrer los actores y hacer una solicitud adicional para obtener más detalles de cada uno
+      for (var a in res['results']) {
+        // Obtener detalles adicionales del actor, incluida la biografía, usando el endpoint de actor
+        http.Response actorDetailsResponse = await http.get(Uri.parse(
+            '${Api.baseUrl}person/${a['id']}?api_key=${Api.apiKey}&language=en-US'));
+
+        var actorDetails = jsonDecode(actorDetailsResponse.body);
+
+        // Crear el objeto Actor con la información obtenida
+        actors.add(
+          Actor(
+            id: a['id'],
+            name: a['name'],
+            profilePath: a['profile_path'],
+            popularity: a['popularity'],
+            biography: actorDetails['biography'],
+          ),
+        );
+      }
+
+      return actors;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Future<List<Movie>> getMoviesByActor(int actorId) async {
+    List<Movie> movies = [];
+    try {
+      final response = await http.get(Uri.parse(
+          '${Api.baseUrl}person/$actorId/movie_credits?api_key=${Api.apiKey}&language=en-US'));
+      var data = jsonDecode(response.body);
+
+      // Imprimir la respuesta para depuración
+      print('Response data: $data');
+
+      // Asegúrate de que 'cast' exista y tenga datos
+      if (data['cast'] != null && data['cast'].isNotEmpty) {
+        for (var movie in data['cast']) {
+          movies.add(Movie.fromMap(movie)); // Usamos el modelo Movie para mapear la respuesta
+        }
+      } else {
+        print('No movies found for this actor');
+      }
+    } catch (e) {
+      print("Error fetching movies: $e");
+      return [];  // Retornamos una lista vacía en caso de error
+    }
+    return movies;
+  }
 }
