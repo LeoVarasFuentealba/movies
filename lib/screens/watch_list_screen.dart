@@ -46,8 +46,8 @@ class WatchList extends StatelessWidget {
                 const SizedBox(
                   height: 30,
                 ),
-                if (Get.find<MoviesController>().watchListMovies.isNotEmpty)
-                  ...Get.find<MoviesController>().watchListMovies.map(
+                if (Get.put(MoviesController()).watchListMovies.isNotEmpty)
+                  ...Get.put(MoviesController()).watchListMovies.map(
                         (movie) => Column(
                           children: [
                             GestureDetector(
