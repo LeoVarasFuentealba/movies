@@ -12,6 +12,7 @@ import 'package:movies/widgets/tab_builder.dart';
 import 'package:movies/widgets/top_rated_actor_item.dart';
 
 class HomeScreen extends StatelessWidget {
+  // Definimos el controlador para actores y la búsqueda
   HomeScreen({super.key});
 
   final ActorsController controller = Get.put(ActorsController());
@@ -28,6 +29,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Título principal
             const Text(
               'Who is your favorite actor?',
               style: TextStyle(
@@ -36,6 +38,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
+            // Cuadro de búsqueda para buscar actores
             SearchBox(
               onSumbit: () {
                 String search =
@@ -47,6 +50,7 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 34),
+            // Mostrar los actores más valorados
             Obx(
                   () => controller.isLoading.value
                   ? const Center(child: CircularProgressIndicator())
@@ -64,18 +68,15 @@ class HomeScreen extends StatelessWidget {
                   SizedBox(
                     height: 300, // Altura fija para ListView horizontal
                     child: ListView.separated(
-                      physics:
-                      const BouncingScrollPhysics(), // Efecto de rebote
-                      scrollDirection:
-                      Axis.horizontal, // Desplazamiento horizontal
+                      physics: const BouncingScrollPhysics(), // Efecto de rebote
+                      scrollDirection: Axis.horizontal, // Desplazamiento horizontal
                       itemCount: controller.topRatedActors.length,
-                      separatorBuilder: (_, __) =>
-                      const SizedBox(width: 24),
+                      separatorBuilder: (_, __) => const SizedBox(width: 24),
                       itemBuilder: (_, index) {
                         final actor = controller.topRatedActors[index];
                         return GestureDetector(
                           onTap: () {
-                            // Navegar a ActorDetailsScreen con el actor seleccionado
+                            // Navegar a la pantalla de detalles del actor
                             Get.to(() => ActorDetailsScreen(actor: actor));
                           },
                           child: TopRatedActorItem(
@@ -90,6 +91,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 34),
+            // Sección de pestañas
             DefaultTabController(
               length: 4,
               child: Column(
@@ -110,21 +112,25 @@ class HomeScreen extends StatelessWidget {
                     height: 400,
                     child: TabBarView(
                       children: [
+                        // Pestaña de películas en emisión
                         TabBuilder(
                           future: ApiService.getCustomMovies(
                             'now_playing?api_key=${Api.apiKey}&language=en-US&page=1',
                           ),
                         ),
+                        // Pestaña de películas próximas
                         TabBuilder(
                           future: ApiService.getCustomMovies(
                             'upcoming?api_key=${Api.apiKey}&language=en-US&page=1',
                           ),
                         ),
+                        // Pestaña de películas más valoradas
                         TabBuilder(
                           future: ApiService.getCustomMovies(
                             'top_rated?api_key=${Api.apiKey}&language=en-US&page=1',
                           ),
                         ),
+                        // Pestaña de películas populares
                         TabBuilder(
                           future: ApiService.getCustomMovies(
                             'popular?api_key=${Api.apiKey}&language=en-US&page=1',

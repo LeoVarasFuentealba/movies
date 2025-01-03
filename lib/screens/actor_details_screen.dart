@@ -5,7 +5,7 @@ import '../models/movie.dart';
 import 'details_screen.dart'; // Importa la pantalla de detalles
 
 class ActorDetailsScreen extends StatelessWidget {
-  final Actor actor;
+  final Actor actor; // Actor seleccionado cuyos detalles se mostrarán.
 
   const ActorDetailsScreen({super.key, required this.actor});
 
@@ -14,11 +14,11 @@ class ActorDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          actor.name,
-          style: const TextStyle(color: Colors.white), // Texto blanco
+          actor.name, // Muestra el nombre del actor en la barra superior.
+          style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color(0xFF242A32),
-        iconTheme: const IconThemeData(color: Colors.white), // Íconos blancos
+        backgroundColor: const Color(0xFF242A32), // Fondo oscuro para el AppBar.
+        iconTheme: const IconThemeData(color: Colors.white), // Íconos en blanco.
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -26,6 +26,7 @@ class ActorDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Foto de perfil del actor (si está disponible).
               if (actor.profilePath != null)
                 Center(
                   child: ClipRRect(
@@ -38,6 +39,7 @@ class ActorDetailsScreen extends StatelessWidget {
                   ),
                 ),
               const SizedBox(height: 16),
+              // Nombre del actor.
               Text(
                 actor.name,
                 style: const TextStyle(
@@ -46,12 +48,14 @@ class ActorDetailsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
+              // Biografía del actor (si está disponible).
               if (actor.biography != null && actor.biography!.isNotEmpty)
                 Text(
                   actor.biography!,
                   style: const TextStyle(fontSize: 16),
                 ),
               const SizedBox(height: 24),
+              // Sección de películas conocidas.
               const Text(
                 'Movies',
                 style: TextStyle(
@@ -60,6 +64,7 @@ class ActorDetailsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
+              // Lista de películas obtenida mediante un `FutureBuilder`.
               FutureBuilder<List<Movie>>(
                 future: ApiService.getMoviesByActor(actor.id),
                 builder: (context, snapshot) {
@@ -78,12 +83,12 @@ class ActorDetailsScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            // Navegar a la pantalla de detalles de la película
+                            // Navegar a la pantalla de detalles de la película.
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => DetailsScreen(
-                                  movie: movies[index], // Pasa la película seleccionada
+                                  movie: movies[index], // Pasa la película seleccionada.
                                 ),
                               ),
                             );
@@ -97,7 +102,7 @@ class ActorDetailsScreen extends StatelessWidget {
                                 fit: BoxFit.cover,
                               ),
                             )
-                                : const Icon(Icons.image, size: 50),
+                                : const Icon(Icons.image, size: 50), // Icono si no hay imagen.
                             title: Text(
                               movies[index].title,
                               style: const TextStyle(fontSize: 16, color: Colors.white),
